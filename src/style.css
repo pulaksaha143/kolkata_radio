@@ -473,20 +473,7 @@ html, body {
 .vol-left-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 190px;
-}
-
-.btn-mute {
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: var(--ink-white);
-  line-height: 1;
-  padding: 0;
-  display: flex;
-  align-items: center;
+  min-width: 80px;
 }
 
 .vol-label-text {
@@ -571,57 +558,82 @@ html, body {
   transform: translateY(1px);
 }
 
-/* Primary Tune In Button */
+/* Primary Tune In Button - Strongly Highlighted Primary CTA */
 .btn-tune {
-  background: var(--ink-white);
+  background: #ffffff;
   color: #000000;
-  border: 1px solid var(--ink-white);
+  border: 1.5px solid #ffffff;
   padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.28);
 }
 
 .btn-tune:hover {
-  background: #ffffff;
+  background: #e8e8e8;
+  color: #000000;
   transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.45);
 }
 
 .btn-tune.paused {
-  background: #151515;
-  color: var(--ink-white);
-  border-color: var(--border-mid);
+  background: #ffffff;
+  color: #000000;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+  animation: pulse-tune-btn 2.2s infinite ease-in-out;
 }
 
 .btn-tune.paused:hover {
-  background: var(--ink-white);
+  background: #f2f2f2;
   color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.55);
 }
 
-/* Channels Button (Browse Link) */
+@keyframes pulse-tune-btn {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 255, 255, 0.55);
+  }
+}
+
+/* Channels Button (Browse Link) - Strongly Highlighted Secondary */
 .btn-channels {
-  background: #141414;
-  color: var(--ink-white);
-  border: 1px solid var(--border-mid);
-  padding: 0 20px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1.5px solid #ffffff;
+  padding: 0 22px;
   text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
 }
 
 .btn-channels:hover {
-  background: var(--ink-white);
+  background: #ffffff;
   color: #000000;
-  border-color: var(--ink-white);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
 }
 
-/* Stream URL Button */
+/* Stream URL Button - Subdued Utility */
 .btn-stream {
-  background: #141414;
+  background: #101010;
   color: var(--ink-silver);
   border: 1px solid var(--border-mid);
   padding: 0 20px;
+  opacity: 0.75;
 }
 
 .btn-stream:hover {
-  color: var(--ink-white);
-  border-color: var(--ink-white);
+  opacity: 1;
+  color: #ffffff;
+  border-color: var(--border-light);
+  background: #181818;
 }
 
 .ctrl-btn-icon {
@@ -1100,6 +1112,13 @@ html, body {
 /* ==========================================================================
    Responsive Ergonomics
    ========================================================================== */
+@media (max-width: 768px) {
+  /* Hide manual frequency dial on mobile for streamlined ergonomics */
+  .tuner-deck {
+    display: none !important;
+  }
+}
+
 @media (max-width: 640px) {
   .console-wrapper {
     padding: 12px 8px;
@@ -1107,7 +1126,6 @@ html, body {
 
   .program-hero,
   .visualizer-box,
-  .tuner-deck,
   .master-deck,
   .radio-footer {
     padding-left: 14px;
@@ -1121,6 +1139,16 @@ html, body {
   .master-deck {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .deck-buttons-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ctrl-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .btn-power {

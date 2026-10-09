@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const receiverLabel = document.getElementById('receiverLabel');
   const volumeSlider = document.getElementById('volumeSlider');
   const volumeDisplay = document.getElementById('volumeDisplay');
-  const btnAudible = document.getElementById('btnAudible');
-  const muteIcon = document.getElementById('muteIcon');
 
   const filmGrainCanvas = document.getElementById('filmGrainCanvas');
 
@@ -52,22 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const MAX_FREQ = 1500;
   const AIR_KOLKATA_FREQ = 657;
 
-  // Persistent volume (saved level or default 80)
-  const savedVolume = localStorage.getItem('kolkata_radio_volume');
-  let currentVolume = savedVolume !== null ? parseInt(savedVolume, 10) : 80;
-  if (isNaN(currentVolume) || currentVolume < 0 || currentVolume > 100) currentVolume = 80;
-  let previousVolume = currentVolume > 0 ? currentVolume : 80;
+  // Persistent volume (always 100% by default)
+  let currentVolume = 100;
+  let previousVolume = 100;
 
   // Set initial slider & display UI
-  if (volumeSlider) volumeSlider.value = currentVolume;
-  if (volumeDisplay) volumeDisplay.textContent = `${currentVolume}%`;
-  if (muteIcon) muteIcon.textContent = currentVolume === 0 ? '🔇' : '🔊';
+  if (volumeSlider) volumeSlider.value = 100;
+  if (volumeDisplay) volumeDisplay.textContent = '100%';
 
   let currentFrequency = 657;
-  let isPlaying = true;
+  let isPlaying = false;
   let currentFilter = 'all';
   let hlsInstance = null;
   let unlockArmed = false;
+  let userGestureReceived = false;
 
   // ==========================================================================
   // Channel data — loaded from /channels.json at runtime
@@ -316,23 +312,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   const HLS_CONFIG = {
     enableWorker: true,
-    lowLatencyMode: false, // BitGravity streams use 10s chunks; keep lowLatencyMode false for buffer stability
-    backBufferLength: 30,
-    maxBufferLength: 30,
-    maxMaxBufferLength: 60,
-    liveSyncDurationCount: 3, // Start 3 chunks back to guarantee uninterrupted playback
-    liveMaxLatencyDurationCount: 6,
-    fragLoadingTimeOut: 25000,
+    lowLatencyMode: true,
+    backBufferLength: 0,            // Never keep past audio in buffer — zero back buffer!
+    maxBufferLength: 4,             // Minimal buffer: stay tight to real-time live transmission
+    maxMaxBufferLength: 8,
+    liveSyncDurationCount: 1,       // Start directly at the newest live chunk on the server (never from past)
+    liveMaxLatencyDurationCount: 2,
+    maxLiveSyncPlaybackRate: 1.5,   // Automatically catch up to live if any latency develops
+    liveDurationInfinity: true,
+    fragLoadingTimeOut: 20000,
     manifestLoadingTimeOut: 15000,
     levelLoadingTimeOut: 15000,
     fragLoadingMaxRetry: 4,
     manifestLoadingMaxRetry: 4,
   };
 
+  function getLiveStreamUrl(baseUrl) {
+    if (!baseUrl) return '';
+    const sep = baseUrl.includes('?') ? '&' : '?';
+    return `${baseUrl}${sep}_live=${Date.now()}`;
+  }
+
   function setAudioVolume(vol) {
     if (audioEl) {
       audioEl.volume = Math.max(0, Math.min(1, vol / 100));
-      audioEl.muted = false;
     }
   }
 
@@ -350,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnReceiver?.classList.add('paused');
       if (playIcon) playIcon.textContent = '▶';
       if (receiverLabel) {
-        receiverLabel.textContent = 'STANDBY [ PAUSED ]';
+        receiverLabel.textContent = 'PLAY';
       }
       if (heroLiveTag) heroLiveTag.textContent = 'STANDBY';
     }
@@ -367,43 +370,139 @@ document.addEventListener('DOMContentLoaded', () => {
     btnReceiver?.classList.add('paused');
     if (playIcon) playIcon.textContent = '▶';
     if (receiverLabel) {
-      receiverLabel.textContent = 'STANDBY — CLICK TO UNMUTE & PLAY ▶';
+      receiverLabel.textContent = 'PLAY';
     }
     if (heroLiveTag) heroLiveTag.textContent = 'STANDBY';
+  }
+
+  function stopListening() {
+    isPlaying = false;
+    if (hlsInstance) {
+      try {
+        hlsInstance.stopLoad();
+        hlsInstance.detachMedia();
+        hlsInstance.destroy();
+      } catch (err) {
+        console.warn('[HLS] Destroy error:', err);
+      }
+      hlsInstance = null;
+    }
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.removeAttribute('src');
+      audioEl.srcObject = null;
+      audioEl.load(); // Completely flushes hardware and software media buffers
+    }
+    setPlaybackActiveUI(false);
+  }
+
+  function startListeningLive() {
+    cleanupUnlockListeners();
+    userGestureReceived = true;
+    initAudioContext();
+    isPlaying = true;
+    updateVol(100);
+
+    if (activeStation) {
+      loadStream(activeStation.url);
+    }
+  }
+
+  function handleUserUnlock() {
+    userGestureReceived = true;
+    cleanupUnlockListeners();
+    initAudioContext();
+
+    if (audioEl) {
+      audioEl.muted = false;
+      audioEl.volume = 1.0;
+      currentVolume = 100;
+      if (volumeSlider) volumeSlider.value = 100;
+      if (volumeDisplay) volumeDisplay.textContent = '100%';
+
+      if (audioEl.paused || !hlsInstance) {
+        startListeningLive();
+      } else {
+        setPlaybackActiveUI(true);
+      }
+    }
   }
 
   function armGlobalAutoplayUnlock() {
     if (unlockArmed) return;
     unlockArmed = true;
 
-    const unlockHandler = () => {
-      unlockArmed = false;
-      window.removeEventListener('click', unlockHandler);
-      window.removeEventListener('touchstart', unlockHandler);
-      window.removeEventListener('keydown', unlockHandler);
-
-      initAudioContext();
-      if (audioEl) {
-        audioEl.muted = false;
-        setAudioVolume(currentVolume);
-        const promise = audioEl.play();
-        if (promise !== undefined) {
-          promise
-            .then(() => setPlaybackActiveUI(true))
-            .catch(err => console.warn('[Audio] User unlock error:', err));
-        }
-      }
-    };
-
-    window.addEventListener('click', unlockHandler, { once: true });
-    window.addEventListener('touchstart', unlockHandler, { once: true });
-    window.addEventListener('keydown', unlockHandler, { once: true });
+    const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+    events.forEach(evt => {
+      window.addEventListener(evt, handleUserUnlock, { capture: true, passive: true });
+    });
   }
 
-  function loadStream(url) {
+  function cleanupUnlockListeners() {
+    unlockArmed = false;
+    const events = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+    events.forEach(evt => {
+      window.removeEventListener(evt, handleUserUnlock, { capture: true });
+    });
+  }
+
+  function executeAutostartPlayback() {
     if (!audioEl) return;
 
-    // Clean up any existing HLS instance
+    // Always keep volume 100%
+    audioEl.volume = 1.0;
+
+    // If user has already tapped or clicked anywhere
+    if (userGestureReceived) {
+      initAudioContext();
+      audioEl.muted = false;
+      const playPromise = audioEl.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setPlaybackActiveUI(true))
+          .catch(err => console.warn('[Play] User play error:', err));
+      }
+      return;
+    }
+
+    // Tier 1: Try UNMUTED autoplay (works on desktop if allowed by browser policy)
+    audioEl.muted = false;
+    const playPromise = audioEl.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log('[Autostart] ✓ Unmuted playback started successfully');
+          setPlaybackActiveUI(true);
+        })
+        .catch(err => {
+          console.log('[Autostart] Browser blocked unmuted autoplay (' + err.name + '). Starting live stream in background...');
+
+          // Tier 2: Start MUTED playback immediately!
+          // Universally permitted by all desktop & mobile browsers (iOS & Android).
+          // HLS connects, downloads chunks, decodes audio, and streams live in background!
+          audioEl.muted = true;
+          const mutedPromise = audioEl.play();
+          if (mutedPromise !== undefined) {
+            mutedPromise
+              .then(() => {
+                console.log('[Autostart] ✓ Live stream active and decoding in background. Ready to unmute on user interaction.');
+                setPlaybackBlockedUI();
+                armGlobalAutoplayUnlock();
+              })
+              .catch(err2 => {
+                console.warn('[Autostart] Both play attempts blocked until gesture:', err2);
+                setPlaybackBlockedUI();
+                armGlobalAutoplayUnlock();
+              });
+          }
+        });
+    }
+  }
+
+  function loadStream(rawUrl) {
+    if (!audioEl || !rawUrl) return;
+
+    // Clean up any existing HLS instance and flush buffer
     if (hlsInstance) {
       try {
         hlsInstance.stopLoad();
@@ -415,16 +514,18 @@ document.addEventListener('DOMContentLoaded', () => {
       hlsInstance = null;
     }
 
-    // Reset native audio element
+    // Reset native audio element and completely wipe buffer
     audioEl.pause();
     audioEl.removeAttribute('src');
+    audioEl.srcObject = null;
     audioEl.load();
 
-    audioEl.muted = false;
-    setAudioVolume(currentVolume);
+    audioEl.volume = 1.0;
     setPlaybackBufferingUI();
 
-    const isHLS = url.includes('.m3u8');
+    // Cache-bust the live stream URL to guarantee the browser/CDN fetches the live online manifest right now
+    const url = getLiveStreamUrl(rawUrl);
+    const isHLS = rawUrl.includes('.m3u8');
 
     if (isHLS && typeof Hls !== 'undefined' && Hls.isSupported()) {
       hlsInstance = new Hls(HLS_CONFIG);
@@ -432,20 +533,11 @@ document.addEventListener('DOMContentLoaded', () => {
       hlsInstance.attachMedia(audioEl);
 
       hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-        initAudioContext();
-        console.log('[HLS] Manifest parsed, starting playback:', url);
-        audioEl.muted = false;
-        setAudioVolume(currentVolume);
-        const playPromise = audioEl.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setPlaybackActiveUI(true))
-            .catch(err => {
-              console.warn('[HLS] Browser blocked autoplay, awaiting interaction:', err);
-              setPlaybackBlockedUI();
-              armGlobalAutoplayUnlock();
-            });
+        console.log('[HLS] Live manifest parsed, seeking to live edge:', url);
+        if (hlsInstance.liveSyncPosition) {
+          audioEl.currentTime = hlsInstance.liveSyncPosition;
         }
+        executeAutostartPlayback();
       });
 
       hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
@@ -453,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              console.warn('[HLS] Network error encountered, attempting automatic recovery in 1s...');
+              console.warn('[HLS] Network error encountered, re-fetching live manifest in 1s...');
               setTimeout(() => {
                 if (hlsInstance) hlsInstance.startLoad();
               }, 1000);
@@ -476,44 +568,34 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (audioEl.canPlayType('application/vnd.apple.mpegurl')) {
       // Native Safari HLS
       audioEl.src = url;
-      audioEl.muted = false;
-      setAudioVolume(currentVolume);
-      initAudioContext();
-      const playPromise = audioEl.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setPlaybackActiveUI(true))
-          .catch(() => {
-            setPlaybackBlockedUI();
-            armGlobalAutoplayUnlock();
-          });
-      }
+      audioEl.load();
+      audioEl.addEventListener('loadedmetadata', function onLoadedMeta() {
+        audioEl.removeEventListener('loadedmetadata', onLoadedMeta);
+        if (audioEl.seekable && audioEl.seekable.length > 0) {
+          audioEl.currentTime = audioEl.seekable.end(audioEl.seekable.length - 1);
+        }
+      });
+      executeAutostartPlayback();
     } else {
       // Direct audio (MP3/AAC)
       audioEl.src = url;
-      audioEl.muted = false;
-      setAudioVolume(currentVolume);
-      initAudioContext();
-      const playPromise = audioEl.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => setPlaybackActiveUI(true))
-          .catch(() => {
-            setPlaybackBlockedUI();
-            armGlobalAutoplayUnlock();
-          });
-      }
+      audioEl.load();
+      executeAutostartPlayback();
     }
   }
 
   // Audio element event listeners
   if (audioEl) {
     audioEl.addEventListener('playing', () => {
-      initAudioContext();
-      setPlaybackActiveUI(true);
+      if (userGestureReceived) {
+        initAudioContext();
+      }
+      if (!audioEl.muted) {
+        setPlaybackActiveUI(true);
+      }
     });
     audioEl.addEventListener('waiting', () => {
-      if (isPlaying) setPlaybackBufferingUI();
+      if (isPlaying && !audioEl.muted) setPlaybackBufferingUI();
     });
     audioEl.addEventListener('pause', () => {
       if (!isPlaying) setPlaybackActiveUI(false);
@@ -527,6 +609,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function selectChannel(channel) {
+    userGestureReceived = true;
     initAudioContext();
     activeStation = channel;
     tuneTo(channel.freq);
@@ -535,7 +618,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     isPlaying = true;
     audioEl.muted = false;
-    setAudioVolume(currentVolume);
+    currentVolume = 100;
+    updateVol(100);
 
     loadStream(channel.url);
   }
@@ -591,6 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let timeDomainData = null;
 
   function initAudioContext() {
+    if (!userGestureReceived) return;
     if (!audioCtx) {
       try {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -738,27 +823,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. Play / Pause Receiver Toggle
   // ==========================================================================
   btnReceiver?.addEventListener('click', () => {
+    userGestureReceived = true;
     initAudioContext();
     if (!audioEl) return;
     if (isPlaying && !audioEl.paused) {
-      // Pause
-      audioEl.pause();
-      setPlaybackActiveUI(false);
+      // User pauses: stop listening on this device and wipe all buffers
+      stopListening();
     } else {
-      // Resume / Start
-      isPlaying = true;
-      audioEl.muted = false;
-      setAudioVolume(currentVolume);
-
-      if (audioEl.src || hlsInstance) {
-        audioEl.play()
-          .then(() => setPlaybackActiveUI(true))
-          .catch(() => {
-            if (activeStation) loadStream(activeStation.url);
-          });
-      } else if (activeStation) {
-        loadStream(activeStation.url);
-      }
+      // User plays: fetch fresh online stream and play pure live
+      startListeningLive();
     }
   });
 
@@ -771,7 +844,6 @@ document.addEventListener('DOMContentLoaded', () => {
       volumeSlider.value = currentVolume;
     }
     if (volumeDisplay) volumeDisplay.textContent = `${currentVolume}%`;
-    if (muteIcon) muteIcon.textContent = currentVolume === 0 ? '🔇' : '🔊';
 
     // Persist volume level across page visits
     try {
@@ -790,22 +862,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Two-way sync: reflect any audio element volume changes onto the slider
   if (audioEl) {
     audioEl.addEventListener('volumechange', () => {
-      const vol = audioEl.muted ? 0 : Math.round(audioEl.volume * 100);
+      // When muted by autostart fallback, preserve 100% slider
+      if (audioEl.muted) return;
+      const vol = Math.round(audioEl.volume * 100);
       if (vol !== currentVolume) {
         updateVol(vol, true);
       }
     });
   }
-
-  btnAudible?.addEventListener('click', () => {
-    if (currentVolume > 0) {
-      previousVolume = currentVolume;
-      updateVol(0);
-    } else {
-      const restore = previousVolume > 0 ? previousVolume : 80;
-      updateVol(restore);
-    }
-  });
 
   // ==========================================================================
   // 10. Custom Stream Modal
@@ -875,8 +939,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderChannelsGrid('all');
       tuneTo(activeStation.freq);
 
+      // Always keep volume 100%
+      updateVol(100);
+
       // Start stream
-      setTimeout(startPlayback, 200);
+      setTimeout(startPlayback, 100);
     })
     .catch(err => {
       console.error('[Kolkata Radio] ✗ channels.json load failed:', err);

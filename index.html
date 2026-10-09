@@ -20,8 +20,8 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <!-- Hidden Audio Element -->
-    <audio id="radioAudio" preload="auto" playsinline></audio>
+    <!-- Native Audio Element (Auto-Streaming) -->
+    <audio id="radioAudio" preload="auto" playsinline webkit-playsinline></audio>
     <!-- Real 35mm Film Grain Canvas (Satyajit Ray Celluloid Texture) -->
     <canvas id="filmGrainCanvas" class="film-grain-canvas" aria-hidden="true"></canvas>
 
@@ -107,8 +107,6 @@
           <!-- ROW 1: VOLUME SLIDER (ABOVE BUTTONS) -->
           <div class="deck-volume-row">
             <div class="vol-left-label">
-              <button class="btn-mute" id="btnAudible" aria-label="Toggle Mute">
-              </button>
               <span class="vol-label-text">VOLUME</span>
             </div>
 
@@ -119,21 +117,21 @@
                 class="minimal-vol-slider"
                 min="0"
                 max="100"
-                value="80"
+                value="100"
                 aria-label="Volume Slider"
               />
             </div>
 
-            <span class="vol-text" id="volumeDisplay">80%</span>
+            <span class="vol-text" id="volumeDisplay">100%</span>
           </div>
 
           <!-- ROW 2: BALANCED TACTILE BUTTONS BAR -->
           <div class="deck-buttons-row">
             
             <!-- PLAY / PAUSE BUTTON -->
-            <button class="ctrl-btn btn-tune" id="btnReceiver" aria-label="Toggle Broadcast">
-              <span class="ctrl-btn-icon" id="playIcon">■</span>
-              <span id="receiverLabel">RECEIVING [ AIR GEETANJALI ]</span>
+            <button class="ctrl-btn btn-tune paused" id="btnReceiver" aria-label="Toggle Broadcast">
+              <span class="ctrl-btn-icon" id="playIcon">▶</span>
+              <span id="receiverLabel">PLAY</span>
             </button>
 
             <!-- BROWSE CHANNELS BUTTON (SCROLLS TO SECTION) -->
@@ -175,10 +173,6 @@
         </section>
 
         <!-- 6. CLEAN FOOTER -->
-        <footer class="radio-footer">
-          <span class="footer-credits">বীরেন্দ্রকৃষ্ণ ভদ্র (Chandi Path) • পঙ্কজকুমার মল্লিক (Music) • বাণীকুমার (Script)</span>
-          <span class="footer-copy">KOLKATA RADIO • 1931–2026</span>
-        </footer>
       </div>
     </main>
 
