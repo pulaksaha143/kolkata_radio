@@ -1,57 +1,58 @@
 # Kolkata Radio • কলকাতা রেডিও
 
-> Minimalist monochrome radio player inspired by Satyajit Ray's 35mm celluloid aesthetic, broadcasting live public radio stations from Kolkata.
-
-![Kolkata Radio](public/favicon.svg)
-
-## Features
-
-- **6 Live Kolkata AIR Broadcast Feeds:**
-  - `CH 01` Akashvani Kolkata Geetanjali (MW 657 kHz)
-  - `CH 02` Akashvani Maitree Kolkata (MW 594 kHz)
-  - `CH 03` Akashvani FM Gold 100.1 (100.1 MHz FM)
-  - `CH 04` Akashvani FM Rainbow 107 (107.0 MHz FM)
-  - `CH 05` Vividh Bharati Kolkata (101.8 MHz FM)
-  - `CH 06` Akashvani Sanchayita Kolkata (MW 1008 kHz)
-- **Real-Time Cathode-Ray Oscilloscope:**
-  - Live audio analysis via Web Audio API (`AudioContext` + `AnalyserNode`) decoding real broadcast waveforms.
-  - Analog CRT reticle grid and dynamic carrier frequency readout.
-- **Interactive Frequency Dial:**
-  - Drag or click to tune frequencies across the MW/AM band with resonance lock indicators.
-- **Monochrome 35mm Celluloid Texture:**
-  - Procedural film grain canvas simulating authentic 1960s film stock.
-- **Two-Way Synchronized Volume & Storage:**
-  - User volume preferences persist in `localStorage` across reloads.
-  - Full Media Session API integration with system media keys.
+> A minimalist monochrome radio dashboard inspired by Satyajit Ray's 35mm celluloid aesthetic, streaming live public All India Radio (AIR) broadcasts from Kolkata.
 
 ---
 
-## Deploy to Cloudflare Pages
+## Live Radio Channels
 
-### 1. Connect Repository
-In your [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create application** > **Pages** > **Connect to Git**:
-Select `kolkata_radio`.
-
-### 2. Build & Deployment Settings
-* **Framework preset:** `Vite`
-* **Build command:** `npm run build`
-* **Build output directory:** `dist`
-* **Root directory:** `/`
-
-Cloudflare Pages will build the site using Vite and deploy to a global edge network.
+| Channel | Station | Frequency Band | Language / Focus |
+| :--- | :--- | :--- | :--- |
+| **CH 01** | **Akashvani Kolkata Geetanjali** | MW 657 kHz | Bengali Primary & Culture |
+| **CH 02** | **Akashvani Maitree Kolkata** | MW 594 kHz | Cross-border Bengali Broadcast |
+| **CH 03** | **Akashvani FM Gold 100.1** | 100.1 MHz FM | Classic Melodies & News |
+| **CH 04** | **Akashvani FM Rainbow 107** | 107.0 MHz FM | Contemporary Music & Youth |
+| **CH 05** | **Vividh Bharati Kolkata** | 101.8 MHz FM | Golden Era Hindi & Film Songs |
+| **CH 06** | **Akashvani Sanchayita** | MW 1008 kHz | Archive & Literary Heritage |
 
 ---
 
-## Local Development
+## How to Use
+
+### 1. Starting Playback & Tuning
+- **One-Click Play / Pause:** Tap the large `RECEIVING [ STATION ]` button on the console to start or stop the broadcast immediately.
+- **Direct Channel Selection:** Click any card in the **Channel Directory** at the bottom to tune directly to that station. The dial needle moves automatically, locks frequency, and switches streams seamlessly.
+- **Category Filter:** Filter stations by language/genre using the `ALL CHANNELS`, `BENGALI`, and `HINDI` filter tabs.
+
+### 2. Interactive Frequency Dial
+- **Manual Tuning:** Click or drag the amber-white needle along the 520–1500 kHz frequency scale.
+- **Resonance Lock:** When tuned within proximity of an active broadcast frequency, the monitor locks at `RESONANCE: 100% [LOCKED]`.
+
+### 3. Real-Time Modulation Monitor
+- **Live Audio Waveform:** The central oscilloscope visualizer connects directly to the audio stream through the Web Audio API, decoding real-time broadcast amplitude and speech waveforms.
+- **Phosphor Status Readout:** Shows carrier lock status, current frequency, and audio decode state in real-time.
+
+### 4. Volume & Audio Controls
+- **Volume Slider:** Adjust the volume smoothly from 0% to 100%. Your selected volume level is automatically saved in your browser and restored on every visit.
+- **Instant Mute:** Click the speaker icon button next to the volume slider to quickly mute and restore your audio.
+- **System Media Keys:** You can use your keyboard media keys (Play / Pause / Next) or OS Control Center to control the radio.
+
+### 5. Custom Stream URL
+- Click **+ STREAM URL** to open the custom stream dialog.
+- Enter any direct HLS (`.m3u8`), AAC, or MP3 live stream link to play it through the console.
+
+---
+
+## Local Setup
 
 ```bash
 # Install dependencies
 npm install
 
-# Start Vite dev server
+# Start local development server
 npm run dev
 
-# Production build
+# Build production bundle
 npm run build
 ```
 
