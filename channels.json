@@ -1,0 +1,89 @@
+{
+  "station_dashboard": {
+    "groups": [
+      {
+        "group_name": "PUBLIC / AIR",
+        "channels": [
+          {
+            "id": "geetanjali",
+            "ch": "CH 01",
+            "name_bn": "আকাশবাণী কলকাতা গীতাঞ্জলি",
+            "name_en": "AIR Geetanjali",
+            "frequency": "MW 657 kHz",
+            "freq": 657,
+            "tags": ["air", "bengali"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "AIR GEETANJALI • 657 kHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio055/hlspbaudio05564kbps.m3u8",
+            "audio_type": "hls"
+          },
+          {
+            "id": "maitree",
+            "ch": "CH 02",
+            "name_bn": "আকাশবাণী মৈত্রী কলকাতা",
+            "name_en": "Akashvani Maitree",
+            "frequency": "MW 594 kHz",
+            "freq": 594,
+            "tags": ["air", "bengali"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "AKASHVANI MAITREE • 594 kHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio245/hlspbaudio24564kbps.m3u8",
+            "audio_type": "hls"
+          },
+          {
+            "id": "fmgold",
+            "ch": "CH 03",
+            "name_bn": "আকাশবাণী এফএম গোল্ড কলকাতা",
+            "name_en": "AIR FM Gold 100.1",
+            "frequency": "100.1 MHz FM",
+            "freq": 1001,
+            "tags": ["air", "bengali", "hindi"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "FM GOLD • 100.1 MHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio056/hlspbaudio05664kbps.m3u8",
+            "audio_type": "hls"
+          },
+          {
+            "id": "fmrainbow",
+            "ch": "CH 04",
+            "name_bn": "আকাশবাণী এফএম রেইনবো কলকাতা",
+            "name_en": "AIR FM Rainbow 107",
+            "frequency": "107.0 MHz FM",
+            "freq": 1070,
+            "tags": ["air", "bengali", "hindi"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "FM RAINBOW • 107.0 MHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio058/hlspbaudio05864kbps.m3u8",
+            "audio_type": "hls"
+          },
+          {
+            "id": "vividhbharati",
+            "ch": "CH 05",
+            "name_bn": "বিবিধ ভারতী কলকাতা",
+            "name_en": "Vividh Bharati 101.8",
+            "frequency": "101.8 MHz FM",
+            "freq": 1018,
+            "tags": ["air", "hindi"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "VIVIDH BHARATI • 101.8 MHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio275/hlspbaudio27564kbps.m3u8",
+            "audio_type": "hls"
+          },
+          {
+            "id": "sanchayita",
+            "ch": "CH 06",
+            "name_bn": "আকাশবাণী সঞ্চয়িতা কলকাতা",
+            "name_en": "AIR Sanchayita",
+            "frequency": "MW 1008 kHz",
+            "freq": 1008,
+            "tags": ["air", "bengali"],
+            "cat_label": "PUBLIC / AIR",
+            "badge_tag": "AIR SANCHAYITA • 1008 kHz",
+            "stream_url": "https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio057/hlspbaudio05764kbps.m3u8",
+            "audio_type": "hls"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Kolkata Radio • কলকাতা রেডিও | Live Broadcasts</title>
+    
+    <meta name="description" content="Kolkata Radio • Live Kolkata radio stations including Akashvani Geetanjali, FM Gold, FM Rainbow, Maitree and Mahalaya." />
+    <meta name="theme-color" content="#080808" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Google Fonts: Libre Baskerville + EB Garamond + Cinzel + Noto Serif Bengali + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- HLS.js for HLS stream playback -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Hidden Audio Element -->
+    <audio id="radioAudio" preload="auto" playsinline></audio>
+    <!-- Real 35mm Film Grain Canvas (Satyajit Ray Celluloid Texture) -->
+    <canvas id="filmGrainCanvas" class="film-grain-canvas" aria-hidden="true"></canvas>
+
+    <!-- Background Vignette -->
+    <div class="crt-backdrop" aria-hidden="true"></div>
+
+    <main class="console-wrapper">
+      <div class="minimal-radio-chassis">
+        
+        <!-- 1. CLEAN HEADER (BALANCED BILINGUAL IDENTITY) -->
+        <header class="radio-header">
+          <div class="header-station">
+            <span class="station-mark">■</span>
+            <span class="station-title">KOLKATA RADIO</span>
+            <span class="station-sep">/</span>
+            <span class="station-title-bn">কলকাতা রেডিও</span>
+          </div>
+          <div class="header-status">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span class="live-label">LIVE</span>
+            <span class="divider">|</span>
+            <time class="ist-clock" id="istClock">04:00:00 IST</time>
+          </div>
+        </header>
+
+        <!-- 2. HERO: CURRENT CHANNEL NAME DISPLAY -->
+        <section class="program-hero" aria-label="Current Broadcast">
+          <div class="program-label-row">
+            <span class="badge-tag" id="heroBadgeTag">NOW TRANSMITTING • MW 657 kHz</span>
+            <span class="live-pill-tag" id="heroLiveTag">LIVE</span>
+          </div>
+
+          <div class="program-title-group">
+            <h1 class="program-title" id="programTitle">
+              <span class="program-title-bn" id="programTitleBn">আকাশবাণী কলকাতা গীতাঞ্জলি</span>
+              <span class="title-sep">/</span>
+              <span class="program-title-en" id="programTitleEn">AIR GEETANJALI</span>
+            </h1>
+          </div>
+        </section>
+
+        <!-- 3. OSCILLOSCOPE MONITOR (AUDIO VISUALIZER) -->
+        <section class="visualizer-box" aria-label="Modulation Monitor">
+          <div class="visualizer-topbar">
+            <div class="visualizer-topbar-left">
+              <span class="vis-indicator">■</span>
+              <span>MODULATION MONITOR</span>
+              <span class="vis-sep">/</span>
+              <span class="vis-freq" id="visFreqDisplay">FREQ: 657.0 kHz</span>
+            </div>
+            <div class="visualizer-topbar-right">
+              <span class="vis-channel-tag" id="visChannelTag">AIR GEETANJALI</span>
+              <span class="vis-sep">|</span>
+              <span id="resonanceText">RESONANCE: 100%</span>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="oscCanvas" width="1000" height="130"></canvas>
+          </div>
+        </section>
+
+        <!-- 4. REAL RADIO FREQUENCY TUNER (DIRECT INTERACTIVE DIAL) -->
+        <section class="tuner-deck" aria-label="Frequency Tuner">
+          <div class="tuner-hdr">
+            <span class="tuner-caption">FREQUENCY TUNER (KHZ)</span>
+            <span class="freq-badge" id="freqBadge">657.0 kHz [LOCKED]</span>
+          </div>
+
+          <!-- Interactive Scale: click or drag the needle directly -->
+          <div class="dial-container" id="rulerTrack">
+            <div class="dial-ticks" id="rulerTicks"></div>
+            <div class="dial-needle-wrap" id="needleWrapper" style="left: 14%;">
+              <div class="dial-needle"></div>
+              <div class="needle-chip" id="needleChip">657 kHz</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. STREAMLINED MASTER CONTROLS -->
+        <section class="master-deck" aria-label="Controls">
+          
+          <!-- ROW 1: VOLUME SLIDER (ABOVE BUTTONS) -->
+          <div class="deck-volume-row">
+            <div class="vol-left-label">
+              <button class="btn-mute" id="btnAudible" aria-label="Toggle Mute">
+              </button>
+              <span class="vol-label-text">VOLUME</span>
+            </div>
+
+            <div class="vol-slider-wrap">
+              <input
+                type="range"
+                id="volumeSlider"
+                class="minimal-vol-slider"
+                min="0"
+                max="100"
+                value="80"
+                aria-label="Volume Slider"
+              />
+            </div>
+
+            <span class="vol-text" id="volumeDisplay">80%</span>
+          </div>
+
+          <!-- ROW 2: BALANCED TACTILE BUTTONS BAR -->
+          <div class="deck-buttons-row">
+            
+            <!-- PLAY / PAUSE BUTTON -->
+            <button class="ctrl-btn btn-tune" id="btnReceiver" aria-label="Toggle Broadcast">
+              <span class="ctrl-btn-icon" id="playIcon">■</span>
+              <span id="receiverLabel">RECEIVING [ AIR GEETANJALI ]</span>
+            </button>
+
+            <!-- BROWSE CHANNELS BUTTON (SCROLLS TO SECTION) -->
+            <a href="#channelsSection" class="ctrl-btn btn-channels" id="btnBrowseChannels">
+              <span>BROWSE CHANNELS</span>
+            </a>
+
+            <!-- STREAM URL BUTTON -->
+            <button class="ctrl-btn btn-stream" id="btnCustomStream" title="Enter Custom Stream URL">
+              <span class="ctrl-btn-icon">+</span>
+              <span>STREAM URL</span>
+            </button>
+
+          </div>
+
+        </section>
+
+        <!-- 6. DEDICATED CHANNELS SECTION -->
+        <section class="channels-deck" id="channelsSection" aria-label="Kolkata Radio Channels">
+          <div class="channels-deck-header">
+            <div class="channels-header-titles">
+              <span class="channels-section-mark">■</span>
+              <h2 class="channels-section-title">CHANNEL DIRECTORY</h2>
+              <span class="channels-section-sep">/</span>
+              <span class="channels-section-title-bn">চ্যানেলসমূহ</span>
+            </div>
+            
+            <!-- Category Filter Tabs -->
+            <div class="channels-filter-tabs" role="tablist" aria-label="Channel Categories">
+              <button class="filter-tab active" data-filter="all" type="button">ALL CHANNELS</button>
+              <button class="filter-tab" data-filter="bengali" type="button">BENGALI</button>
+              <button class="filter-tab" data-filter="hindi" type="button">HINDI</button>
+            </div>
+          </div>
+
+          <div class="channels-grid" id="channelsGrid">
+            <!-- Dynamically populated Kolkata radio channel cards -->
+          </div>
+        </section>
+
+        <!-- 6. CLEAN FOOTER -->
+        <footer class="radio-footer">
+          <span class="footer-credits">বীরেন্দ্রকৃষ্ণ ভদ্র (Chandi Path) • পঙ্কজকুমার মল্লিক (Music) • বাণীকুমার (Script)</span>
+          <span class="footer-copy">KOLKATA RADIO • 1931–2026</span>
+        </footer>
+      </div>
+    </main>
+
+    <!-- MINIMAL STREAM URL MODAL -->
+    <dialog class="retro-modal" id="streamModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>CUSTOM STREAM URL</h3>
+          <button class="modal-close" id="modalClose">[ ✕ ]</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-sub">Direct HLS (.m3u8), AAC, or MP3 stream URL:</p>
+          <div class="modal-input-row">
+            <input
+              type="url"
+              id="customUrlInput"
+              class="modal-input"
+              value="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio055/hlspbaudio05564kbps.m3u8"
+            />
+            <button class="modal-btn" id="btnSaveCustomUrl">PLAY</button>
+          </div>
+          <div class="quick-links">
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio055/hlspbaudio05564kbps.m3u8">AIR Geetanjali</button>
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio056/hlspbaudio05664kbps.m3u8">AIR FM Gold 100.1</button>
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio058/hlspbaudio05864kbps.m3u8">AIR FM Rainbow 107</button>
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio275/hlspbaudio27564kbps.m3u8">Vividh Bharati 101.8</button>
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio057/hlspbaudio05764kbps.m3u8">AIR Sanchayita</button>
+            <button class="ql-btn" data-url="https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio245/hlspbaudio24564kbps.m3u8">Akashvani Maitree</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

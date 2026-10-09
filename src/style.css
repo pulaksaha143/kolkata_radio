@@ -1,0 +1,1138 @@
+/* ==========================================================================
+   AKASHVANI KOLKATA — MINIMALIST MONOCHROME RADIO
+   Satyajit Ray 35mm Cinematic Aesthetic • Reduced Complexity
+   ========================================================================== */
+
+:root {
+  --bg-deep: #080808;
+  --bg-chassis: #0d0d0d;
+  --bg-screen: #040404;
+  --bg-control: #141414;
+  
+  --ink-white: #f5f5f3;
+  --ink-silver: #c8c8c4;
+  --ink-dim: #777774;
+  --border-crisp: #ffffff;
+  --border-mid: rgba(255, 255, 255, 0.22);
+  --border-faint: rgba(255, 255, 255, 0.10);
+  
+  --font-bengali: 'Noto Serif Bengali', serif;
+  --font-vintage: 'Libre Baskerville', 'EB Garamond', Georgia, serif;
+  --font-display: 'Cinzel', 'Libre Baskerville', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 120ms ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-deep);
+  color: var(--ink-white);
+  font-family: var(--font-vintage);
+  font-size: 13.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Real 35mm Film Grain Canvas (Satyajit Ray Celluloid Texture)
+   ========================================================================== */
+.film-grain-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.22;
+  mix-blend-mode: screen;
+}
+
+.crt-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.9) 100%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px;
+  opacity: 0.8;
+}
+
+/* ==========================================================================
+   Console Wrapper & Fullscreen Minimalist Chassis
+   ========================================================================== */
+.console-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.minimal-radio-chassis {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-chassis);
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   1. Clean Header (Full-Bleed)
+   ========================================================================== */
+.radio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: #090909;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  gap: 12px;
+}
+
+.header-station {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.station-mark {
+  font-size: 9px;
+  color: var(--ink-white);
+}
+
+.station-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.station-sep {
+  font-family: var(--font-vintage);
+  color: var(--ink-dim);
+  font-size: 14px;
+}
+
+.station-title-bn {
+  font-family: var(--font-bengali);
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.station-freq {
+  color: #e4e4e0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border: 1px solid var(--border-faint);
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px #ffffff;
+  animation: pulse-dot 1.8s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.live-label {
+  font-weight: 700;
+  color: var(--ink-white);
+  letter-spacing: 0.12em;
+}
+
+.divider {
+  color: var(--ink-dim);
+}
+
+.ist-clock {
+  font-weight: 700;
+  color: var(--ink-white);
+  letter-spacing: 0.12em;
+}
+
+/* ==========================================================================
+   2. Hero: Current Program Display (Full-Bleed, Equal Readability)
+   ========================================================================== */
+.program-hero {
+  padding: 36px clamp(18px, 3.5vw, 48px) 30px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 60%);
+}
+
+.program-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge-tag {
+  font-family: var(--font-vintage);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  color: #c4c4c0;
+  font-weight: 700;
+}
+
+.live-pill-tag {
+  background: var(--ink-white);
+  color: #000000;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 9px;
+}
+
+.program-title-group {
+  margin-bottom: 0;
+}
+
+.program-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 18px;
+  line-height: 1.25;
+}
+
+.program-title-bn {
+  font-family: var(--font-bengali);
+  font-size: clamp(1.8rem, 3.2vw, 2.7rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+.title-sep {
+  font-family: var(--font-vintage);
+  font-size: clamp(1.6rem, 2.8vw, 2.3rem);
+  color: var(--ink-dim);
+  font-weight: 400;
+  user-select: none;
+}
+
+.program-title-en {
+  font-family: var(--font-vintage);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   3. Oscilloscope Visualizer Box (Full-Bleed)
+   ========================================================================== */
+.visualizer-box {
+  padding: 22px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: #070707;
+}
+
+.visualizer-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--ink-silver);
+  margin-bottom: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.visualizer-topbar-left,
+.visualizer-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vis-indicator {
+  color: #ffffff;
+  font-size: 8px;
+}
+
+.vis-sep {
+  color: var(--ink-dim);
+}
+
+.vis-freq {
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 2px 7px;
+  border: 1px solid var(--border-faint);
+  font-size: 10px;
+}
+
+.vis-channel-tag {
+  color: #ffffff;
+  font-family: var(--font-vintage);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  background: #020202;
+  border: 1px solid var(--border-mid);
+  overflow: hidden;
+}
+
+.canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   4. Real Radio Frequency Tuner (Full-Bleed Dial)
+   ========================================================================== */
+.tuner-deck {
+  padding: 24px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: #090909;
+}
+
+.tuner-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  margin-bottom: 14px;
+}
+
+.tuner-caption {
+  color: var(--ink-silver);
+  font-weight: 600;
+}
+
+.freq-badge {
+  color: var(--ink-white);
+  background: #000000;
+  border: 1px solid var(--border-faint);
+  padding: 3px 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.dial-container {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  background: #030303;
+  border: 1px solid var(--border-mid);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dial-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 0 18px;
+}
+
+.tick-group {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.tick-line {
+  width: 1px;
+  background: var(--ink-dim);
+}
+
+.tick-line.major {
+  height: 36px;
+  background: var(--ink-white);
+  width: 1.5px;
+}
+
+.tick-line.medium {
+  height: 22px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.tick-line.minor {
+  height: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.tick-num {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--ink-silver);
+}
+
+/* Glowing Tuning Needle */
+.dial-needle-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: left 70ms ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.dial-needle {
+  width: 2.5px;
+  height: 48px;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+}
+
+.needle-chip {
+  margin-top: 3px;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+  font-size: 9.5px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   5. Streamlined Master Controls (Full-Bleed)
+   ========================================================================== */
+.master-deck {
+  padding: 24px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: #0b0b0b;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Row 1: Volume Slider (Above Buttons) */
+.deck-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.vol-left-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 190px;
+}
+
+.btn-mute {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--ink-white);
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.vol-label-text {
+  font-family: var(--font-vintage);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink-white);
+}
+
+.vol-slider-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.minimal-vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.25);
+  outline: none;
+  cursor: pointer;
+}
+
+.minimal-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 24px;
+  background: var(--ink-white);
+  border: 1px solid #000000;
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+.minimal-vol-slider::-moz-range-thumb {
+  width: 14px;
+  height: 24px;
+  background: var(--ink-white);
+  border: 1px solid #000000;
+  cursor: pointer;
+}
+
+.vol-text {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 42px;
+  text-align: right;
+  color: var(--ink-white);
+}
+
+/* Row 2: Balanced Tactile Buttons Bar */
+.deck-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0;
+  transition: transform var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.ctrl-btn:active {
+  transform: translateY(1px);
+}
+
+/* Primary Tune In Button */
+.btn-tune {
+  background: var(--ink-white);
+  color: #000000;
+  border: 1px solid var(--ink-white);
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.btn-tune:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-tune.paused {
+  background: #151515;
+  color: var(--ink-white);
+  border-color: var(--border-mid);
+}
+
+.btn-tune.paused:hover {
+  background: var(--ink-white);
+  color: #000000;
+}
+
+/* Channels Button (Browse Link) */
+.btn-channels {
+  background: #141414;
+  color: var(--ink-white);
+  border: 1px solid var(--border-mid);
+  padding: 0 20px;
+  text-decoration: none;
+}
+
+.btn-channels:hover {
+  background: var(--ink-white);
+  color: #000000;
+  border-color: var(--ink-white);
+}
+
+/* Stream URL Button */
+.btn-stream {
+  background: #141414;
+  color: var(--ink-silver);
+  border: 1px solid var(--border-mid);
+  padding: 0 20px;
+}
+
+.btn-stream:hover {
+  color: var(--ink-white);
+  border-color: var(--ink-white);
+}
+
+.ctrl-btn-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   6. Dedicated Channels Section (Full-Bleed, Satyajit Ray Aesthetic)
+   ========================================================================== */
+.channels-deck {
+  padding: 32px clamp(18px, 3.5vw, 48px);
+  border-bottom: 1px solid var(--border-mid);
+  background: #090909;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.channels-deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 16px;
+}
+
+.channels-header-titles {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.channels-section-mark {
+  font-size: 10px;
+  color: var(--ink-white);
+}
+
+.channels-section-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+}
+
+.channels-section-sep {
+  font-family: var(--font-vintage);
+  color: var(--ink-dim);
+  font-size: 14px;
+}
+
+.channels-section-title-bn {
+  font-family: var(--font-bengali);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+/* Category Filter Tabs */
+.channels-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: #121212;
+  color: var(--ink-silver);
+  border: 1px solid var(--border-mid);
+  padding: 6px 14px;
+  font-family: var(--font-vintage);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+  border-radius: 0;
+}
+
+.filter-tab:hover {
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.filter-tab.active {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+/* Channels Grid */
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+/* Individual Channel Card */
+.channel-grid-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #0d0d0d;
+  border: 1px solid var(--border-mid);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+  border-radius: 0;
+  color: var(--ink-white);
+  position: relative;
+}
+
+.channel-grid-card:hover {
+  background: #171717;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.channel-grid-card.active {
+  background: #1b1b1b;
+  border-color: #ffffff;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.12);
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.card-num {
+  font-family: var(--font-mono);
+  color: var(--ink-dim);
+  font-weight: 700;
+}
+
+.card-cat-badge {
+  font-family: var(--font-vintage);
+  color: var(--ink-silver);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.card-status-dot {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border: 1px solid var(--border-faint);
+  color: var(--ink-dim);
+  background: #000000;
+}
+
+.channel-grid-card.active .card-status-dot {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+/* Balanced Bilingual Name Row - Equal Readability */
+.card-names-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 4px 0;
+}
+
+.card-name-bn {
+  font-family: var(--font-bengali);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.card-sep {
+  font-family: var(--font-vintage);
+  font-size: 14px;
+  color: var(--ink-dim);
+}
+
+.card-name-en {
+  font-family: var(--font-vintage);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+.card-program-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 4px;
+  padding: 5px 0 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 2px;
+}
+
+.card-program-bn {
+  font-family: var(--font-bn);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+}
+
+.card-program-sep {
+  font-family: var(--font-vintage);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.card-program-en {
+  font-family: var(--font-vintage);
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.card-freq-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink-silver);
+}
+
+.channel-grid-card.active .card-freq-tag {
+  color: #ffffff;
+}
+
+.card-tune-action {
+  font-family: var(--font-vintage);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+}
+
+.channel-grid-card.active .card-tune-action {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   6. Clean Footer (Full-Bleed)
+   ========================================================================== */
+.radio-footer {
+  padding: 20px clamp(18px, 3.5vw, 48px);
+  background: #080808;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+/* ==========================================================================
+   Modal Dialog
+   ========================================================================== */
+.retro-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.retro-modal[open] {
+  display: flex;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 500px;
+  background: #111111;
+  border: 1px solid var(--border-crisp);
+  padding: 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
+}
+
+.modal-box-channels {
+  max-width: 660px;
+}
+
+.channels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 14px;
+  padding-right: 4px;
+}
+
+.channel-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #080808;
+  border: 1px solid var(--border-faint);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  gap: 12px;
+}
+
+.channel-card:hover {
+  background: #161616;
+  border-color: var(--border-mid);
+  transform: translateX(2px);
+}
+
+.channel-card.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--ink-white);
+}
+
+.channel-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.channel-name-bn {
+  font-family: var(--font-bengali);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-white);
+}
+
+.channel-name-en {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-silver);
+}
+
+.channel-tag-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.channel-freq-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-white);
+  background: #000;
+  border: 1px solid var(--border-faint);
+  padding: 3px 8px;
+}
+
+.channel-active-indicator {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #000;
+  background: var(--ink-white);
+  padding: 2px 6px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 8px;
+}
+
+.modal-header h3 {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--ink-silver);
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.modal-sub {
+  font-size: 11px;
+  color: var(--ink-silver);
+  margin-bottom: 10px;
+}
+
+.modal-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.modal-input {
+  flex: 1;
+  background: #000;
+  border: 1px solid var(--border-mid);
+  color: var(--ink-white);
+  padding: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  outline: none;
+}
+
+.modal-btn {
+  background: #ffffff;
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+.quick-links {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ql-btn {
+  background: #181818;
+  border: 1px solid var(--border-faint);
+  color: var(--ink-silver);
+  padding: 4px 8px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.ql-btn:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+/* ==========================================================================
+   Responsive Ergonomics
+   ========================================================================== */
+@media (max-width: 640px) {
+  .console-wrapper {
+    padding: 12px 8px;
+  }
+
+  .program-hero,
+  .visualizer-box,
+  .tuner-deck,
+  .master-deck,
+  .radio-footer {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .program-title-bn {
+    font-size: 1.8rem;
+  }
+
+  .master-deck {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-power {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .volume-unit {
+    width: 100%;
+  }
+
+  .btn-stream-link {
+    text-align: center;
+  }
+}
